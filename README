@@ -1,0 +1,12 @@
+Instruction
+
+
+Command Line:
+Build the project by running "./gradlew assembleDebug" in the project directory. You need to set ANDROID_HOME environmental variable pointing to android SDK directory if not set.
+
+APK output should be in "projectDirectory"/giphySearch/build/outputs/apk/debug. Install by running "adb install giphySearch-debug.apk" from the directory.
+
+
+
+Android Studio:
+Simply open the project and run.
