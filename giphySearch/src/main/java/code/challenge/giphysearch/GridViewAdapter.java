@@ -73,7 +73,7 @@ public class GridViewAdapter extends BaseAdapter {
     ImageView iv = view.findViewById(R.id.gifImage);
     ProgressBar pb = view.findViewById(R.id.gifImageProgressBar);
     Glide.with(context)
-        .load(getItem(i).getImages().getFixedWidth().getUrl())
+        .load(getItem(i).getImages().getFixedWidthDownsampled().getUrl())
         .listener(createRequestListener(pb))
         .into(iv);
     return view;
