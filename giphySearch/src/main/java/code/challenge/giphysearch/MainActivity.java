@@ -1,8 +1,10 @@
 package code.challenge.giphysearch;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,10 +18,14 @@ import dagger.android.AndroidInjection;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-  //private static final String TAG = MainActivity.class.getSimpleName();
+  private static final String QUERY = "query";
+  private static final String TAG = MainActivity.class.getSimpleName();
   @Inject
   GiphySearchViewModel viewModel;
+  @Inject
+  SharedPreferences pref;
   private SearchView searchView;
+  private GridView gv;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +34,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     setContentView(R.layout.activity_main);
     Toolbar myToolbar = findViewById(R.id.my_toolbar);
     setSupportActionBar(myToolbar);
-    setup();
+    setup(savedInstanceState);
   }
 
-  private void setup() {
-    GridView gv = findViewById(R.id.gridView);
-    String queryString = viewModel.getQueryString();
-    if (queryString.length() !=0) getSupportActionBar().setTitle(queryString.trim());
-    viewModel.search(queryString).observe(this, result -> {
-      GridViewAdapter adapter = new GridViewAdapter(MainActivity.this, result.getDataList());
-      gv.setAdapter(adapter);
-    });
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    Log.i(TAG, "onSaveInstanceState: ");
+    super.onSaveInstanceState(outState);
+    outState.putString(QUERY, viewModel.getQueryString());
+  }
+
+  private void setup(Bundle savedInstanceState) {
+    gv = findViewById(R.id.gridView);
+    String queryString = savedInstanceState != null ? restoreQuery(savedInstanceState) : "";
+    submitSearch(queryString);
+  }
+
+  private String restoreQuery(Bundle savedInstanceState) {
+    return savedInstanceState.getString(QUERY);
   }
 
   @Override
@@ -56,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.clear:
-        submitSearch("", getResources().getString(R.string.app_name));
+        submitSearch("");
         return true;
     }
     return false;
@@ -67,12 +80,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     //Log.i(TAG, "onQueryTextSubmit: " + query);
     searchView.setQuery("", false);
     searchView.setIconified(true);
-    submitSearch(query, query);
+    submitSearch(query);
     return true;
   }
 
-  private void submitSearch(String query, String title) {
-    viewModel.search(query.trim());
+  private void submitSearch(String query) {
+    String title = query.length() == 0 ? getResources().getString(R.string.app_name) : query;
+    viewModel.search(query).observe(this, result -> {
+      GridViewAdapter adapter = new GridViewAdapter(MainActivity.this, result.getDataList());
+      gv.setAdapter(adapter);
+    });
     getSupportActionBar().setTitle(title.trim());
     invalidateOptionsMenu();
   }

@@ -1,9 +1,8 @@
-package code.challenge.giphysearch.viewModel;
+package code.challenge.giphysearch.model;
 
 import android.arch.lifecycle.LiveData;
 import android.util.Log;
 
-import code.challenge.giphysearch.model.GiphySearchModel;
 import code.challenge.giphysearch.model.entity.Result;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,13 +23,13 @@ public class GiphySearchLiveData extends LiveData<Result> {
     query = "";
   }
 
-  void setQuery(String query) {
+  public void setQuery(String query) {
     if (query != null && query.equals(this.query) && getValue() != null) return;
     this.query = query;
     load();
   }
 
-  String getQuery() {
+  public String getQuery() {
     return query;
   }
 

@@ -2,6 +2,7 @@ package code.challenge.giphysearch.viewModel;
 
 import android.arch.lifecycle.ViewModel;
 
+import code.challenge.giphysearch.model.GiphySearchLiveData;
 import code.challenge.giphysearch.model.GiphySearchModel;
 
 /**
@@ -11,13 +12,14 @@ import code.challenge.giphysearch.model.GiphySearchModel;
 public class GiphySearchViewModel extends ViewModel {
 
   private GiphySearchLiveData query;
+  private GiphySearchModel model;
 
   public void setModel(GiphySearchModel model) {
-    if (query == null) query = new GiphySearchLiveData(model);
+    this.model = model;
   }
 
   public GiphySearchLiveData search(String queryString) {
-    query.setQuery(queryString);
+    if (query == null || !getQueryString().equals(queryString)) query = model.query(queryString);
     return query;
   }
 

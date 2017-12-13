@@ -15,9 +15,15 @@ public class GiphySearchModel {
     this.giphyAPI = giphyAPI;
   }
 
-  public Call<Result> getSearchResult(String query) {
+  Call<Result> getSearchResult(String query) {
     if (query != null && query.length() != 0) return giphyAPI.searchFor(query);
     return giphyAPI.getTrending();
+  }
+
+  public GiphySearchLiveData query(String queryString) {
+    GiphySearchLiveData result = new GiphySearchLiveData(this);
+    result.setQuery(queryString);
+    return result;
   }
 
 }
